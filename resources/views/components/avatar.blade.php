@@ -1,0 +1,2 @@
+@props(['user', 'size' => 'size-9'])
+@if($user?->avatar_url)<img src="{{ $user->avatar_url }}" alt="{{ $user->name }}" class="{{ $size }} rounded-full object-cover ring-1 ring-zinc-200 dark:ring-zinc-700">@else<span class="{{ $size }} grid place-items-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:ring-indigo-900">{{ $user?->initials() ?? '?' }}</span>@endif
