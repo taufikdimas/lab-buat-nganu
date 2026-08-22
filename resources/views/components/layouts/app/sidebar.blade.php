@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>@include('partials.head')</head>
 <body class="min-h-screen bg-zinc-50 text-zinc-950 dark:bg-zinc-950 dark:text-zinc-100">
+    @php($unreadNotificationCount = auth()->user()->workNotifications()->whereNull('read_at')->count())
     <flux:sidebar sticky stashable class="border-r border-zinc-200/80 bg-white dark:border-zinc-800 dark:bg-zinc-950">
         <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-2 py-2" wire:navigate.hover>
@@ -20,8 +21,8 @@
                 <flux:navlist.item icon="magnifying-glass" :href="route('search')" :current="request()->routeIs('search')" wire:navigate.hover>Search</flux:navlist.item>
                 <flux:navlist.item icon="bell" :href="route('notifications')" :current="request()->routeIs('notifications')" wire:navigate.hover>
                     Notifications
-                    @if(auth()->user()->workNotifications()->whereNull('read_at')->count())
-                        <flux:badge size="sm" color="indigo" inset="top bottom">{{ auth()->user()->workNotifications()->whereNull('read_at')->count() }}</flux:badge>
+                    @if($unreadNotificationCount)
+                        <flux:badge size="sm" color="indigo" inset="top bottom">{{ $unreadNotificationCount }}</flux:badge>
                     @endif
                 </flux:navlist.item>
             </flux:navlist.group>

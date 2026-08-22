@@ -1,6 +1,6 @@
 <div>
     <x-page-header title="Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 18 ? 'afternoon' : 'evening') }}, {{ str(auth()->user()->name)->before(' ') }}" description="Here’s what’s moving across your workspace today.">
-        <flux:button variant="primary" icon="plus" :href="route('projects.create')" wire:navigate>New project</flux:button>
+        <flux:button variant="primary" icon="plus" :href="route('projects.create')" wire:navigate.hover>New project</flux:button>
     </x-page-header>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -14,7 +14,7 @@
 
     <div class="mt-8 grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
         <section class="rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-5 dark:border-zinc-800"><div><h2 class="font-semibold">Recent projects</h2><p class="text-sm text-zinc-500">Your latest active workspaces</p></div><flux:button variant="ghost" size="sm" :href="route('projects.index')" wire:navigate>View all</flux:button></div>
+            <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-5 dark:border-zinc-800"><div><h2 class="font-semibold">Recent projects</h2><p class="text-sm text-zinc-500">Your latest active workspaces</p></div><flux:button variant="ghost" size="sm" :href="route('projects.index')" wire:navigate.hover>View all</flux:button></div>
             <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse($projects as $project)
                     <a href="{{ route('projects.show', $project) }}" wire:navigate.hover class="flex items-center gap-4 px-6 py-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">

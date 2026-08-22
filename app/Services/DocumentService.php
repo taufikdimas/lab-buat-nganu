@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class DocumentService
 {
@@ -28,6 +29,11 @@ class DocumentService
             'visibility' => $data['visibility'] ?? 'project',
         ]);
         Activity::create(['project_id' => $project->id, 'document_id' => $document->id, 'user_id' => $owner->id, 'action' => 'document.uploaded', 'description' => $owner->name.' uploaded '.$document->name]);
+
+        // Successful Livewire uploads no longer linger in temporary storage.
+        if ($file instanceof TemporaryUploadedFile) {
+            $file->delete();
+        }
 
         return $document;
     }

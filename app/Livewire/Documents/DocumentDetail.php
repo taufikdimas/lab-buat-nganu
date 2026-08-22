@@ -32,6 +32,10 @@ class DocumentDetail extends Component
 
     public string $editingCommentBody = '';
 
+    public ?string $membershipRole = null;
+
+    public bool $hasEditorShare = false;
+
     public function mount(Document $document): void
     {
         $this->authorize('view', $document);
@@ -39,6 +43,18 @@ class DocumentDetail extends Component
         $this->editName = $document->name;
         $this->editDescription = $document->description ?? '';
         $this->editVisibility = $document->visibility;
+
+        $user = auth()->user();
+        if (! $user->isAdmin()) {
+            $this->membershipRole = $document->project->memberships()
+                ->active()
+                ->where('user_id', $user->id)
+                ->value('role');
+            $this->hasEditorShare = $document->shares()
+                ->where('user_id', $user->id)
+                ->where('permission', 'editor')
+                ->exists();
+        }
     }
 
     public function addComment(MarkdownLiteService $renderer): void
@@ -120,8 +136,23 @@ class DocumentDetail extends Component
 
     public function render()
     {
-        $this->document->load(['owner', 'project', 'shares.user', 'shareLinks', 'comments.user', 'activities.user']);
+        $this->document->load([
+            'owner:id,name,avatar_url',
+            'project:id,name,owner_id,status',
+            'shares:id,document_id,user_id,permission',
+            'shares.user:id,name,email,avatar_url',
+            'shareLinks:id,document_id,token,expires_at,revoked_at,access_count,created_at',
+            'comments:id,document_id,user_id,body_raw,body_rendered,created_at,updated_at',
+            'comments.user:id,name,avatar_url',
+        ]);
 
-        return view('livewire.documents.document-detail');
+        $user = auth()->user();
+        $role = $this->membershipRole;
+        $canManageDocument = $user->isAdmin()
+            || ($this->document->project->status === 'active'
+                && (in_array($role, ['owner', 'editor'], true) || $this->hasEditorShare));
+        $canComment = $user->isAdmin() || $this->document->project->status === 'active';
+
+        return view('livewire.documents.document-detail', compact('canComment', 'canManageDocument'));
     }
 }

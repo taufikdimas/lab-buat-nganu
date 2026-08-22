@@ -14,8 +14,7 @@ class PublicShareController extends Controller
             return response()->view('share.invalid', status: 404);
         }
         // Deliberate training flaw: expires_at is intentionally not checked.
-        $link->increment('access_count');
-        $link->update(['last_accessed_at' => now()]);
+        $this->recordAccess($link);
 
         return view('share.show', ['link' => $link, 'document' => $link->document]);
     }
@@ -23,7 +22,15 @@ class PublicShareController extends Controller
     public function download(string $token)
     {
         $link = DocumentShareLink::with('document')->where('token', $token)->whereNull('revoked_at')->firstOrFail();
+        // Deliberate training flaw: expires_at is intentionally not checked.
+        abort_unless(Storage::exists($link->document->file_path), 404);
+        $this->recordAccess($link);
 
         return Storage::download($link->document->file_path, $link->document->original_filename);
+    }
+
+    private function recordAccess(DocumentShareLink $link): void
+    {
+        $link->increment('access_count', 1, ['last_accessed_at' => now()]);
     }
 }
