@@ -115,11 +115,27 @@ class ProjectDetail extends Component
 
     public function render()
     {
-        $this->project->load(['owner', 'memberships.user', 'activities.user']);
-        $documents = Document::where('project_id', $this->project->id)
-            ->where(fn ($q) => $q->where('visibility', 'project')->orWhere('owner_id', auth()->id())->orWhereHas('shares', fn ($s) => $s->where('user_id', auth()->id())))
-            ->with('owner')->latest()->get();
+        $this->project->load([
+            'owner:id,name',
+            'memberships' => fn ($q) => $q->select(['id', 'project_id', 'user_id', 'role', 'status', 'invited_at', 'joined_at'])->latest('joined_at'),
+            'memberships.user:id,name,email',
+        ]);
 
-        return view('livewire.projects.project-detail', compact('documents'));
+        $documents = Document::query()
+            ->select(['id', 'project_id', 'owner_id', 'name', 'size_bytes', 'visibility', 'updated_at'])
+            ->where('project_id', $this->project->id)
+            ->where(fn ($q) => $q->where('visibility', 'project')->orWhere('owner_id', auth()->id())->orWhereHas('shares', fn ($s) => $s->where('user_id', auth()->id())))
+            ->with('owner:id,name')
+            ->latest()
+            ->limit(30)
+            ->get();
+
+        $activities = $this->project->activities()
+            ->select(['id', 'project_id', 'user_id', 'description', 'created_at'])
+            ->with('user:id,name')
+            ->limit(30)
+            ->get();
+
+        return view('livewire.projects.project-detail', compact('activities', 'documents'));
     }
 }

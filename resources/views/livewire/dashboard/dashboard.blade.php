@@ -17,10 +17,10 @@
             <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-5 dark:border-zinc-800"><div><h2 class="font-semibold">Recent projects</h2><p class="text-sm text-zinc-500">Your latest active workspaces</p></div><flux:button variant="ghost" size="sm" :href="route('projects.index')" wire:navigate>View all</flux:button></div>
             <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                 @forelse($projects as $project)
-                    <a href="{{ route('projects.show', $project) }}" wire:navigate class="flex items-center gap-4 px-6 py-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                    <a href="{{ route('projects.show', $project) }}" wire:navigate.hover class="flex items-center gap-4 px-6 py-4 transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                         <span class="grid size-10 place-items-center rounded-xl bg-indigo-50 text-sm font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">{{ str($project->name)->substr(0, 2)->upper() }}</span>
                         <span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium">{{ $project->name }}</span><span class="block truncate text-xs text-zinc-500">Owned by {{ $project->owner->name }}</span></span>
-                        <x-status-badge :value="$project->status" /><flux:icon.chevron-right class="size-4 text-zinc-400" />
+                        <x-status-badge :value="$project->status" /><span class="hidden rounded-lg border border-zinc-200 px-3 py-1 text-xs font-medium text-zinc-600 sm:inline dark:border-zinc-700 dark:text-zinc-300">Open</span><flux:icon.chevron-right class="size-4 text-zinc-400" />
                     </a>
                 @empty<div class="px-6 py-12 text-center text-sm text-zinc-500">No projects yet.</div>@endforelse
             </div>

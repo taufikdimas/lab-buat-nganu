@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\V1\ShareController;
 use App\Http\Controllers\Api\V1\UtilityController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::middleware(['auth:sanctum', 'active'])->group(function () {
